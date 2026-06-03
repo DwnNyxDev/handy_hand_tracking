@@ -20,7 +20,7 @@ class Hand:
         dy = finger_y[1] - finger_y[0]
         dx = finger_x[1] - finger_x[0]
         
-        angle_radians = np.atan2(dy,dx)
+        angle_radians = np.arctan2(dy,dx)
 
         if angle_radians < 0:
             angle_radians += np.pi/2
