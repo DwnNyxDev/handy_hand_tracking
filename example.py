@@ -34,9 +34,13 @@ def start_capture(dimensions, landmark_detector) -> None:
 
 if __name__ == "__main__":
     landmark_detector = LiveLandmarkDetector(number_of_hands=2)
+
+    print("\nPress (q) to stop capture\n")
     start_capture(
         dimensions = (1280, 720),
         landmark_detector = landmark_detector
     )
+
+    
     
     
