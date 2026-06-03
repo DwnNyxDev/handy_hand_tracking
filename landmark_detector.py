@@ -6,7 +6,7 @@ import mediapipe as mp
 from mediapipe.tasks import python
 from mediapipe.tasks.python import vision
 
-from hand_controller.hand_tracking.hands import Hand
+from hands import Hand
 
 class LiveLandmarkDetector:
     def __init__(self, number_of_hands = 1):
