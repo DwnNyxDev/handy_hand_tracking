@@ -1,3 +1,4 @@
+import numpy as np
 import cv2
 import time
 import os
@@ -38,17 +39,17 @@ class LiveLandmarkDetector:
         drawn_image = cv2.cvtColor(drawn_image, cv2.COLOR_RGB2BGR)
 
         for hand in hands:
-            raised_fingers = set(hand.get_raised_fingers())
-            for name, points in hand.fingers.items():
+            for _, points in hand.fingers.items():
+                line_points = []
                 for pt in points:
                     x, y, _ = pt
                     u, v = int(x * drawn_image.shape[1]), int(y * drawn_image.shape[0])
-
                     cv2.circle(drawn_image, center=(u,v), radius = 5, color=(0,255,0))
+
+                    line_points.append([(u,v)])
                 
-                if name in raised_fingers:
-                    finger_angle = hand.calculate_finger_angle(name)
-                    cv2.putText(drawn_image, f"{finger_angle}", (u,v), fontFace=cv2.FONT_HERSHEY_COMPLEX, fontScale=0.5, color=(255,0,0), thickness=2)
+                line_points = np.array(line_points, dtype=np.int32)
+                cv2.polylines(drawn_image, [line_points], isClosed=False, color=(0,255,0), thickness=2)
 
         return drawn_image
 
