@@ -1,7 +1,6 @@
 import cv2
 import time
 import os
-import threading
 
 import mediapipe as mp
 from mediapipe.tasks import python
@@ -11,7 +10,6 @@ from hand_controller.hand_tracking.hands import Hand
 
 class LiveLandmarkDetector:
     def __init__(self, number_of_hands = 1):
-        # Resolve model path relative to this file so the .task is found reliably
         self.model_file_path = os.path.join(os.path.dirname(__file__), "hand_landmarker.task")
 
         self.options = vision.HandLandmarkerOptions(
@@ -26,17 +24,21 @@ class LiveLandmarkDetector:
         self.latest_hands = []
         self.latest_timestamp = 0
 
-        self.stop_event = None
-        self._frame_lock = threading.Lock()
-        self._hands_lock = threading.Lock()
- 
 
     @staticmethod
     def draw_landmarks_from_hands(drawn_image, hands) -> list:     
+        """
+        Description:
+            Uses cv2 to draw circles where the landmarks exist on hands, and to write the angle of each finger
+        
+        Params:
+            drawn_image (matlike): Image to draw on
+            hands (list[Hand]): Hands data
+        """
         drawn_image = cv2.cvtColor(drawn_image, cv2.COLOR_RGB2BGR)
 
         for hand in hands:
-            raised_fingers = hand.get_raised_fingers()
+            raised_fingers = set(hand.get_raised_fingers())
             for name, points in hand.fingers.items():
                 for pt in points:
                     x, y, _ = pt
@@ -51,15 +53,19 @@ class LiveLandmarkDetector:
         return drawn_image
 
     def _result_cb(self, result, output_img: mp.Image, timestamp_ms: int) -> None: 
-        hands = Hand.from_landmarker_result(result)
-        with self._hands_lock:
-            self.latest_hands = hands
+        self.latest_hands = Hand.from_landmarker_result(result)
 
     def get_latest_data(self):
-        with self._hands_lock:
-            return (self.latest_frame, self.latest_hands)
+        return (self.latest_frame, self.latest_hands)
     
     def process_frame(self, frame):
+        """
+        Description:
+            Processes the frame using landmark detection model
+        
+        Params:
+            frame (matlike)
+        """
         self.latest_frame = frame
 
         mp_image = mp.Image(
