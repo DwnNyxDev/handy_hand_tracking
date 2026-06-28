@@ -1,0 +1,37 @@
+[build-system]
+requires = ["setuptools >= 77.0.3"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "handy-hand-tracking"
+version = "1.0.0"
+authors = [
+  { name="Vandell Vatel", email="vatelvandell@gmail.com" },
+]
+description = "Python wrapper around Google Mediapipe's Hand Landmark Detection that organizes raw landmark data into usable hand objects with per-finger access, angle calculation, raised finger detection, and more."
+readme = "README.md"
+requires-python = ">=3.9"
+dependencies = [
+    "mediapipe",
+    "numpy",
+    "opencv-python",
+]
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "Operating System :: OS Independent",
+]
+license = "MIT"
+license-files = ["LICENSE*"]
+
+[project.urls]
+Homepage = "https://github.com/DwnNyxDev/hand_tracking"
+
+[project.scripts]
+hand-tracking-example = "hand_tracking.example:main"
+
+[tool.setuptools]
+include-package-data = true
+packages = ["hand_tracking"]
+
+[tool.setuptools.package-data]
+hand_tracking = ["*.task"]
