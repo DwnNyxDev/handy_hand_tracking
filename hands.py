@@ -1,13 +1,20 @@
 import numpy as np
 
 class Hand:
+    """
+    A class storing data on the parts of the hand
 
+    Instance variables:
+        side (str): Left or Right
+        wrist (array): (x,y,z) coords of wrist landmark
+        fingers["index"]: np.ndarray of 4 landmark points
+
+    """
     FINGER_NAMES = ["thumb", "index", "middle", "ring", "pinky"]
 
     def __init__(self):
-        self.side = None # left or right
+        self.side = None
         self.wrist = ()
-        # A dictionary storing the locations of the landmarks per finger
         self.fingers = {
             finger:[] for finger in Hand.FINGER_NAMES
         }
@@ -15,8 +22,8 @@ class Hand:
     def calculate_finger_angle(self, finger_name) -> float:
         """
         Description:
-            Returns the angle of the given finger
-        
+            Returns the angle of the given finger in radians
+
         Params:
             finger_name (string)
         """
@@ -81,7 +88,7 @@ class Hand:
 
             hand_instance = Hand()
             hand_instance.side = side
-            hand_instance.wrist = (landmarks[0].x, landmarks[0].y, landmarks[0].z)
+            hand_instance.wrist = np.array([landmarks[0].x, landmarks[0].y, landmarks[0].z])
 
             for i, finger in enumerate(Hand.FINGER_NAMES):
                 finger_start = 1 + 4*i
