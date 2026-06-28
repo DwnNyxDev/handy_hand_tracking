@@ -1,23 +1,129 @@
 # Hand Tracking
-Python wrapper around Google Mediapipe's [Hand Landmark Detection](https://ai.google.dev/edge/mediapipe/solutions/vision/hand_landmarker) that organizes raw landmark data into usable hand objects with per-finger access, angle calculation, and raised finger detection.
- 
-## Install
- 
-``` bash
-pip install mediapipe opencv-contrib-python numpy
-git clone https://github.com/DwnNyxDev/hand_tracking.git
+Python wrapper around Google Mediapipe's [Hand Landmark Detection](https://ai.google.dev/edge/mediapipe/solutions/vision/hand_landmarker) that organizes raw landmark data into usable hand objects with per-finger access, angle calculation, raised finger detection, and more.
+
+## Installation
+
+Install from PyPI:
+
+```bash
+pip install handy-hand-tracking
 ```
 
-The `hand_landmarker.task` model file is bundled — no separate download needed.
+If you want to work from a local checkout instead, you can install it in editable mode:
+
+```bash
+git clone https://github.com/DwnNyxDev/hand_tracking.git
+cd hand_tracking
+python -m pip install -e .
+```
+
+The bundled `hand_landmarker.task` model file is included with the package, so no separate download is needed.
 
 ## Usage
 
-Example usage of this package is provided within `example.py` which can be run with:
+A simple example entry point is available after installation that reads in video from your device:
 
-``` bash
-python example.py
+```bash
+hand-tracking-example
 ```
 
+You can also run the module directly:
+
+```bash
+python -m hand_tracking.example
+```
+
+Example import usage:
+
+```python
+from hand_tracking.landmark_detector import LiveLandmarkDetector
+```
+
+## API Reference
+
+### `Hand`
+
+Represents a single detected hand with landmark positions and gesture utilities.
+
+```python
+from hand_tracking.hands import Hand
+```
+
+**Attributes:**
+- `side` (str): `"Left"` or `"Right"`.
+- `wrist` (tuple): `(x, y, z)` normalized coordinates of the wrist landmark.
+- `fingers` (dict): Maps finger names to arrays of 4 landmark points each. Keys: `"thumb"`, `"index"`, `"middle"`, `"ring"`, `"pinky"`.
+
+**Methods:**
+
+`get_raised_fingers()` → `list[str]` — Returns the names of fingers that are currently extended (not bent).
+
+```python
+raised = hand.get_raised_fingers()
+# e.g. ["index", "middle"]
+```
+
+`calculate_finger_angle(finger_name)` → `float` — Returns the angle (in radians) of the given finger relative to the image axes.
+
+```python
+angle = hand.calculate_finger_angle("index")
+```
+
+## Usage in a ROS2 / Docker Workspace
+
+Add to your `Dockerfile`:
+
+```dockerfile
+RUN pip install handy-hand-tracking
+```
+
+Then in your ROS2 node:
+
+```python
+from hand_tracking.landmark_detector import LiveLandmarkDetector
+from hand_tracking.hands import Hand
+```
+
+## Troubleshooting: Webcam Not Available (Windows/WSL)
+
+If `docker compose up` fails with:
+
+```
+Error response from daemon: error gathering device information while adding custom device "/dev/video0": no such file or directory
+```
+
+You're likely on Windows with WSL2. USB devices aren't available to WSL by default — you need to attach your webcam manually using `usbipd`.
+
+Open PowerShell **as Administrator** and run:
+
+```powershell
+usbipd list
+```
+
+Find your webcam in the list and note its bus ID (e.g. `2-3`).
+
+**First time only** — bind the device:
+```powershell
+usbipd bind --busid 2-3
+```
+
+**Every restart** — attach it to WSL:
+```powershell
+usbipd attach --wsl --busid 2-3
+```
+
+Binding is a one-time step that persists. Attaching is lost on every Windows restart and must be re-run each session before starting Docker. Then try `docker compose up` again. If `usbipd` is not installed, get it from [usbipd-win](https://github.com/dorssel/usbipd-win/releases).
+
+## Dependencies
+
+- `mediapipe`
+- `numpy`
+- `opencv-python`
+
 ## Used In
- 
+
 - [hand_controller](https://github.com/hcr-vvatel/hand_controller) — ROS 2 package that wraps this library into a node for robot control pipelines
+
+## License
+
+MIT
