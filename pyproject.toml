@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "handy-hand-tracking"
-version = "1.0.0"
+version = "1.0.1"
 authors = [
   { name="Vandell Vatel", email="vatelvandell@gmail.com" },
 ]
@@ -24,7 +24,7 @@ license = "MIT"
 license-files = ["LICENSE*"]
 
 [project.urls]
-Homepage = "https://github.com/DwnNyxDev/hand_tracking"
+Homepage = "https://github.com/DwnNyxDev/handy_hand_tracking"
 
 [project.scripts]
 hand-tracking-example = "hand_tracking.example:main"
