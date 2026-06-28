@@ -1,4 +1,4 @@
-# Hand Tracking
+# Handy Hand Tracking
 Python wrapper around Google Mediapipe's [Hand Landmark Detection](https://ai.google.dev/edge/mediapipe/solutions/vision/hand_landmarker) that organizes raw landmark data into usable hand objects with per-finger access, angle calculation, raised finger detection, and more.
 
 ## Installation
